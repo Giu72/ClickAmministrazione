@@ -1,598 +1,750 @@
 <!DOCTYPE html>
-<html class="dark" lang="it">
+<html lang="it">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calcolatore More Condominiali</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      extend: {
-        colors: {
-          "primary": "#137fec",
-          "background-light": "#f6f7f8",
-          "background-dark": "#101922",
-        },
-        fontFamily: { "display": ["Inter", "sans-serif"] },
-        borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-      },
-    },
-  }
-</script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <style>
-  body { font-family: 'Inter', sans-serif; }
-  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
-  .input-field {
-    background: transparent;
-    border: none;
-    outline: none;
-    width: 100%;
-    color: inherit;
-    font-family: inherit;
-    font-size: 0.75rem;
+  :root {
+    --ink: #1a1a2e;
+    --paper: #f5f0e8;
+    --cream: #ede8dc;
+    --accent: #c8402a;
+    --accent-light: #e8d5d0;
+    --gold: #b8860b;
+    --gold-light: #f0e6c0;
+    --border: #c8bfaa;
+    --muted: #7a7060;
+    --success: #2a6640;
+    --success-light: #d0e8d8;
+    --warning: #8b4a00;
+    --warning-light: #fce8cc;
+    --shadow: rgba(26,26,46,0.12);
   }
-  .input-field::placeholder { color: #4b5563; }
-  .dark .input-field::placeholder { color: #6b7280; }
-  input[type="date"].input-field::-webkit-calendar-picker-indicator { filter: invert(0.5); cursor: pointer; }
-  .dark input[type="date"].input-field::-webkit-calendar-picker-indicator { filter: invert(0.7); }
-  .row-enter { animation: rowIn 0.2s ease; }
-  @keyframes rowIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-  .result-panel { animation: panelIn 0.35s ease; }
-  @keyframes panelIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 2.5rem 3rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    border: 2px solid rgba(200,190,170,0.15);
+    border-radius: 50%;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: 20px; right: 60px;
+    width: 120px; height: 120px;
+    border: 1px solid rgba(200,190,170,0.1);
+    border-radius: 50%;
+  }
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--border);
+    margin-bottom: 0.6rem;
+  }
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 0.5rem;
+  }
+  .header h1 em {
+    color: #e8b090;
+    font-style: italic;
+  }
+  .header-sub {
+    font-size: 0.9rem;
+    color: var(--border);
+    font-weight: 300;
+    max-width: 500px;
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+  }
+
+  /* SECTION TITLES */
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* SETTINGS BAR */
+  .settings-bar {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: flex-end;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+    min-width: 180px;
+  }
+  .field-group label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .field-group select,
+  .field-group input[type="number"] {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.55rem 0.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .field-group select:focus,
+  .field-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .mora-contrattuale-box {
+    display: none;
+    flex: 1;
+    min-width: 180px;
+  }
+  .mora-contrattuale-box.visible { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  /* INFO PILL */
+  .tasso-info {
+    background: var(--gold-light);
+    border: 1px solid var(--gold);
+    border-radius: 3px;
+    padding: 0.5rem 1rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--warning);
+    align-self: flex-end;
+    white-space: nowrap;
+  }
+
+  /* TABLE INPUT */
+  .table-wrapper {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  thead tr {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  thead th {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  thead th:first-child { padding-left: 1.5rem; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--cream);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #faf8f4; }
+
+  tbody td {
+    padding: 0.5rem 0.5rem;
+  }
+  tbody td:first-child { padding-left: 1.5rem; }
+  tbody td:last-child { padding-right: 1rem; }
+
+  .input-cell {
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 0.4rem 0.6rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    color: var(--ink);
+    width: 100%;
+    transition: all 0.15s;
+  }
+  .input-cell:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: white;
+    box-shadow: 0 0 0 3px var(--accent-light);
+  }
+  .input-cell::placeholder { color: #bbb; font-style: italic; }
+
+  input[type="date"].input-cell {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+  }
+
+  /* ROW ACTIONS */
+  .btn-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--border);
+    font-size: 1.1rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 3px;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .btn-remove:hover { color: var(--accent); background: var(--accent-light); }
+
+  /* BUTTONS */
+  .actions-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+    align-items: center;
+  }
+
+  .btn {
+    padding: 0.7rem 1.6rem;
+    border-radius: 3px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #a03020; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(200,64,42,0.3); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn-secondary:hover { background: #2d2d4a; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--cream); color: var(--ink); }
+
+  /* RESULTS */
+  .results-section {
+    display: none;
+    animation: fadeUp 0.4s ease;
+  }
+  .results-section.visible { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SUMMARY CARDS */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .summary-card {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .summary-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .summary-card.red::before { background: var(--accent); }
+  .summary-card.gold::before { background: var(--gold); }
+  .summary-card.green::before { background: var(--success); }
+  .summary-card.ink::before { background: var(--ink); }
+
+  .card-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .card-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.7rem;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .card-value.accent { color: var(--accent); }
+
+  /* RESULTS TABLE */
+  .results-table-wrapper {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow-x: auto;
+    box-shadow: 0 2px 12px var(--shadow);
+  }
+
+  .result-row-ok { background: #fafafa; }
+  .result-row-mora { background: #fff8f6; }
+  .result-row-mora td:first-child { border-left: 3px solid var(--accent); padding-left: calc(1.5rem - 3px); }
+
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+  .badge-ok { background: var(--success-light); color: var(--success); }
+  .badge-mora { background: var(--accent-light); color: var(--accent); }
+  .badge-warning { background: var(--warning-light); color: var(--warning); }
+
+  .amount { font-family: 'DM Mono', monospace; }
+  .amount-mora { color: var(--accent); font-weight: 500; }
+  .amount-total { color: var(--ink); font-weight: 600; }
+
+  /* TRIBUTI SECTION */
+  .tributi-note {
+    background: var(--gold-light);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    padding: 1.2rem 1.5rem;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+  }
+  .tributi-note strong {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warning);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  /* FOOTER */
+  .page-footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+  }
+
+  /* EMPTY STATE */
+  .empty-row td {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-style: italic;
+    font-size: 0.875rem;
+  }
+
+  @media (max-width: 700px) {
+    .header { padding: 1.5rem 1.2rem; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .settings-bar { padding: 1rem; }
+  }
 </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen">
+<body>
 
-<div class="flex h-screen flex-col overflow-hidden">
+<div class="header">
+  <div class="header-eyebrow">Gestione Condominiale · Modulo Calcolo</div>
+  <h1>More sui<br><em>Pagamenti in Ritardo</em></h1>
+  <p class="header-sub">Inserisci i condomini morosi, scegli il tipo di mora e ottieni il calcolo completo in un clic.</p>
+</div>
 
-  <!-- TOP NAV -->
-  <header class="flex items-center justify-between whitespace-nowrap border-b border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark px-6 py-3 sticky top-0 z-50 shrink-0">
-    <div class="flex items-center gap-6">
-      <div class="flex items-center gap-3 text-primary">
-        <span class="material-symbols-outlined text-3xl">account_balance</span>
-        <h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold tracking-tight">CondoAdmin Pro</h2>
-      </div>
-      <div class="flex w-52 items-center gap-2 rounded-lg bg-slate-100 dark:bg-slate-800 px-3 h-9">
-        <span class="material-symbols-outlined text-slate-400 text-lg">search</span>
-        <input class="bg-transparent border-none outline-none text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 w-full" placeholder="Cerca condominio..."/>
-      </div>
+<div class="main">
+
+  <!-- IMPOSTAZIONI -->
+  <div class="section-label">Impostazioni calcolo</div>
+  <div class="settings-bar">
+    <div class="field-group">
+      <label>Tipo di mora</label>
+      <select id="tipoMora" onchange="toggleMoraContrattuale()">
+        <option value="legale">⚖️ Mora legale (tasso di legge)</option>
+        <option value="contrattuale">📋 Mora contrattuale (regolamento)</option>
+      </select>
     </div>
-    <nav class="flex items-center gap-6">
-      <a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
-      <a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Condomini</a>
-      <a class="text-primary text-sm font-bold border-b-2 border-primary pb-0.5" href="#">More</a>
-      <a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">F24</a>
-      <a class="text-slate-500 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors" href="#">Scadenze</a>
-    </nav>
-    <div class="flex items-center gap-2">
-      <button class="flex items-center justify-center rounded-lg h-9 w-9 bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-primary transition-colors">
-        <span class="material-symbols-outlined text-xl">notifications</span>
-      </button>
-      <button class="flex items-center justify-center rounded-lg h-9 w-9 bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-primary transition-colors">
-        <span class="material-symbols-outlined text-xl">account_circle</span>
-      </button>
+
+    <div class="mora-contrattuale-box" id="boxContrattuale">
+      <label>Tasso contrattuale annuo (%)</label>
+      <input type="number" id="tassoContrattuale" placeholder="es. 5.00" step="0.01" min="0" max="100" value="5.00">
     </div>
-  </header>
 
-  <!-- MAIN BODY -->
-  <div class="flex flex-1 overflow-hidden">
+    <div class="field-group">
+      <label>Anno di riferimento</label>
+      <select id="annoRif" onchange="aggiornaTassoInfo()">
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+        <option value="2021">2021</option>
+        <option value="2020">2020</option>
+      </select>
+    </div>
 
-    <!-- LEFT SIDEBAR: Impostazioni -->
-    <aside class="w-72 shrink-0 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex flex-col">
-      <div class="p-5 border-b border-slate-200 dark:border-slate-800">
-        <h3 class="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary">tune</span>
-          Impostazioni Calcolo
-        </h3>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Configura il tipo di mora e il tasso applicabile</p>
-      </div>
-
-      <div class="p-5 space-y-5 flex-1 overflow-y-auto">
-
-        <!-- Tipo mora -->
-        <div>
-          <p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-2">Tipo di Mora</p>
-          <div class="space-y-2">
-            <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
-              <input type="radio" name="tipoMora" value="legale" checked class="accent-primary" onchange="toggleMora()"/>
-              <div>
-                <p class="text-xs font-bold text-slate-800 dark:text-slate-200">⚖️ Mora Legale</p>
-                <p class="text-[10px] text-slate-500">Tasso fissato per legge ogni anno</p>
-              </div>
-            </label>
-            <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition-all">
-              <input type="radio" name="tipoMora" value="contrattuale" class="accent-primary" onchange="toggleMora()"/>
-              <div>
-                <p class="text-xs font-bold text-slate-800 dark:text-slate-200">📋 Mora Contrattuale</p>
-                <p class="text-[10px] text-slate-500">Tasso da regolamento condominiale</p>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- Anno / Tasso legale -->
-        <div id="boxLegale">
-          <p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-2">Anno di Riferimento</p>
-          <select id="annoRif" onchange="aggiornaTasso()" class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary">
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-            <option value="2022">2022</option>
-            <option value="2021">2021</option>
-            <option value="2020">2020</option>
-          </select>
-          <div id="tassoInfoBox" class="mt-2 p-3 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-between">
-            <span class="text-[10px] font-bold text-primary uppercase tracking-widest">Tasso Legale</span>
-            <span id="tassoLabel" class="text-sm font-black text-primary">2,00%</span>
-          </div>
-        </div>
-
-        <!-- Tasso contrattuale -->
-        <div id="boxContrattuale" class="hidden">
-          <p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-2">Tasso Contrattuale (%/anno)</p>
-          <input type="number" id="tassoContrattuale" value="5.00" min="0" max="100" step="0.01"
-            class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-primary"/>
-          <p class="text-[10px] text-slate-500 mt-1">Come da art. del regolamento condominiale</p>
-        </div>
-
-        <!-- Tabella tassi -->
-        <div>
-          <p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-2">Storico Tassi Legali</p>
-          <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
-            <table class="w-full text-xs">
-              <thead>
-                <tr class="bg-slate-100 dark:bg-slate-800">
-                  <th class="text-left px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Anno</th>
-                  <th class="text-right px-3 py-2 text-[10px] font-bold text-slate-500 uppercase">Tasso</th>
-                </tr>
-              </thead>
-              <tbody id="tassiTabella" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Pulsante calcola (fisso in fondo) -->
-      <div class="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
-        <button onclick="calcola()" class="w-full py-2.5 bg-primary text-white text-sm font-bold rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
-          <span class="material-symbols-outlined text-lg">calculate</span>
-          Calcola More
-        </button>
-        <button onclick="addRow()" class="w-full py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-2">
-          <span class="material-symbols-outlined text-base">add</span>
-          Aggiungi Condomino
-        </button>
-      </div>
-    </aside>
-
-    <!-- CENTER: Tabella input + risultati -->
-    <section class="flex-1 flex flex-col overflow-hidden bg-white dark:bg-background-dark">
-
-      <!-- Step bar -->
-      <div class="px-8 py-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
-        <div class="flex items-center gap-2 max-w-lg">
-          <div class="flex flex-col items-center gap-1">
-            <div class="size-7 rounded-full bg-primary flex items-center justify-center text-white">
-              <span class="material-symbols-outlined text-sm">check</span>
-            </div>
-            <span class="text-[10px] font-bold text-primary">1. Inserimento</span>
-          </div>
-          <div class="flex-1 h-[2px] bg-primary mb-3"></div>
-          <div class="flex flex-col items-center gap-1" id="step2indicator">
-            <div class="size-7 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500" id="step2circle">
-              <span class="text-xs font-bold">2</span>
-            </div>
-            <span class="text-[10px] font-bold text-slate-400" id="step2label">2. Risultati</span>
-          </div>
-          <div class="flex-1 h-[2px] bg-slate-200 dark:bg-slate-700 mb-3" id="step3line"></div>
-          <div class="flex flex-col items-center gap-1">
-            <div class="size-7 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500" id="step3circle">
-              <span class="text-xs font-bold">3</span>
-            </div>
-            <span class="text-[10px] font-bold text-slate-400">3. Stampa</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex-1 overflow-y-auto p-8">
-
-        <!-- Titolo -->
-        <div class="mb-6">
-          <h1 class="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Calcolo More sui Pagamenti</h1>
-          <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Inserisci i condomini morosi. Lascia vuota la data pagamento se non ha ancora saldato.</p>
-        </div>
-
-        <!-- INPUT TABLE -->
-        <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm mb-6">
-          <table class="w-full" id="inputTable">
-            <thead>
-              <tr class="bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-                <th class="text-left px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Condomino</th>
-                <th class="text-left px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Condominio / Scala</th>
-                <th class="text-left px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Importo (€)</th>
-                <th class="text-left px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Scadenza</th>
-                <th class="text-left px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Data Pagamento</th>
-                <th class="text-left px-4 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Tributo (€)</th>
-                <th class="px-3 py-3"></th>
-              </tr>
-            </thead>
-            <tbody id="inputBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-          </table>
-        </div>
-
-        <!-- RISULTATI -->
-        <div id="resultsSection" class="hidden result-panel">
-
-          <!-- Summary cards -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-              <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Condomini Morosi</p>
-              <p id="cardMorosi" class="text-2xl font-black text-slate-900 dark:text-slate-100">0</p>
-            </div>
-            <div class="p-4 rounded-xl border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10">
-              <p class="text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1">Totale More</p>
-              <p id="cardMore" class="text-2xl font-black text-red-500">€ 0,00</p>
-            </div>
-            <div class="p-4 rounded-xl border border-amber-200 dark:border-amber-900/30 bg-amber-50 dark:bg-amber-900/10">
-              <p class="text-[10px] font-bold text-amber-400 uppercase tracking-widest mb-1">Tributi Associati</p>
-              <p id="cardTributi" class="text-2xl font-black text-amber-500">€ 0,00</p>
-            </div>
-            <div class="p-4 rounded-xl border border-primary/30 bg-primary/5">
-              <p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-1">Totale da Richiedere</p>
-              <p id="cardTotale" class="text-2xl font-black text-primary">€ 0,00</p>
-            </div>
-          </div>
-
-          <!-- Results table -->
-          <div class="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
-            <div class="px-5 py-3 bg-slate-100 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
-              <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary text-base">table_view</span>
-                Dettaglio per Condomino
-              </h3>
-              <button onclick="stampaPagina()" class="flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition-colors">
-                <span class="material-symbols-outlined text-sm">print</span>
-                Stampa / PDF
-              </button>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full">
-                <thead>
-                  <tr class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-                    <th class="text-left px-4 py-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-widest">Condomino</th>
-                    <th class="text-left px-4 py-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-widest">Condominio</th>
-                    <th class="text-right px-4 py-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-widest">Importo</th>
-                    <th class="text-right px-4 py-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-widest">Gg Ritardo</th>
-                    <th class="text-right px-4 py-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-widest">Tasso</th>
-                    <th class="text-right px-4 py-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-widest">Mora</th>
-                    <th class="text-right px-4 py-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-widest">Tributo</th>
-                    <th class="text-right px-4 py-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-widest">Totale</th>
-                    <th class="text-center px-4 py-2.5 text-[9px] font-bold text-slate-400 uppercase tracking-widest">Stato</th>
-                  </tr>
-                </thead>
-                <tbody id="resultsBody" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Nota tributi -->
-          <div id="notaTributi" class="hidden mt-4 p-4 rounded-xl border border-amber-200 dark:border-amber-800/40 bg-amber-50 dark:bg-amber-900/10 flex gap-3">
-            <span class="material-symbols-outlined text-amber-500 shrink-0 mt-0.5">warning</span>
-            <div>
-              <p class="text-xs font-bold text-amber-700 dark:text-amber-400">Nota Tributi Associati</p>
-              <p class="text-[11px] text-amber-600 dark:text-amber-500 mt-0.5 leading-relaxed">
-                Uno o più condomini hanno tributi locali (es. TARI parti comuni) inclusi nel totale.
-                Verifica con il tuo consulente fiscale se applicare interessi separati ai sensi dell'art. 13 D.Lgs. 471/1997.
-              </p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- RIGHT PANEL: Info & Azioni -->
-    <aside class="w-64 shrink-0 border-l border-slate-200 dark:border-slate-800 p-5 flex flex-col gap-5 bg-slate-50 dark:bg-slate-900/50 overflow-y-auto">
-
-      <div>
-        <p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-3">Riepilogo Rapido</p>
-        <div class="space-y-2">
-          <div class="p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-            <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Condomini inseriti</p>
-            <p id="rpCondomini" class="text-sm font-bold text-slate-900 dark:text-slate-100">0</p>
-          </div>
-          <div class="p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-            <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Tipo Mora Attivo</p>
-            <p id="rpTipoMora" class="text-sm font-bold text-primary">Legale 2,00%</p>
-          </div>
-          <div class="p-3 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
-            <p class="text-[9px] font-bold text-slate-400 uppercase mb-1">Data Calcolo</p>
-            <p id="rpData" class="text-sm font-bold text-slate-900 dark:text-slate-100">—</p>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <p class="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-3">Azioni</p>
-        <div class="space-y-2">
-          <button onclick="resetAll()" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300 hover:border-red-300 hover:text-red-500 transition-all">
-            <span class="material-symbols-outlined text-sm">restart_alt</span>
-            Azzera tutto
-          </button>
-          <button onclick="stampaPagina()" class="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-bold text-slate-600 dark:text-slate-300 hover:border-primary hover:text-primary transition-all">
-            <span class="material-symbols-outlined text-sm">picture_as_pdf</span>
-            Stampa / Salva PDF
-          </button>
-        </div>
-      </div>
-
-      <div class="mt-auto">
-        <div class="bg-primary/5 rounded-xl p-4 border border-primary/20">
-          <div class="flex items-start gap-3">
-            <span class="material-symbols-outlined text-primary mt-0.5">info</span>
-            <div>
-              <p class="text-xs font-bold text-slate-900 dark:text-slate-100 mb-1">Come funziona</p>
-              <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                La mora si calcola dal giorno successivo alla scadenza. Se la data pagamento è vuota, si usa oggi come data di riferimento.
-              </p>
-              <p class="text-[10px] text-slate-400 mt-2">Formula: <span class="font-mono text-primary">Imp × Tasso ÷ 365 × Gg</span></p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </aside>
+    <div class="tasso-info" id="tassoInfo">Tasso legale 2025: 2,00%</div>
   </div>
+
+  <!-- TABELLA INPUT -->
+  <div class="section-label">Elenco condomini</div>
+  <div class="table-wrapper">
+    <table id="inputTable">
+      <thead>
+        <tr>
+          <th>Condomino</th>
+          <th>Condominio / Scala</th>
+          <th>Importo dovuto (€)</th>
+          <th>Scadenza</th>
+          <th>Data pagamento</th>
+          <th>Tributo assoc. (€)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="inputBody">
+        <!-- righe dinamiche -->
+      </tbody>
+    </table>
+  </div>
+
+  <div class="actions-row">
+    <button class="btn btn-ghost" onclick="addRow()">＋ Aggiungi condomino</button>
+    <button class="btn btn-primary" onclick="calcola()">⚡ Calcola more</button>
+    <button class="btn btn-ghost" onclick="resetAll()">↺ Azzera tutto</button>
+  </div>
+
+  <!-- RISULTATI -->
+  <div class="results-section" id="resultsSection">
+    <div class="section-label">Riepilogo calcolo</div>
+
+    <div class="summary-grid">
+      <div class="summary-card red">
+        <div class="card-label">Totale more</div>
+        <div class="card-value accent" id="summaryMore">€ 0,00</div>
+      </div>
+      <div class="summary-card ink">
+        <div class="card-label">Quote non pagate</div>
+        <div class="card-value" id="summaryQuote">€ 0,00</div>
+      </div>
+      <div class="summary-card gold">
+        <div class="card-label">Tributi associati</div>
+        <div class="card-value" id="summaryTributi">€ 0,00</div>
+      </div>
+      <div class="summary-card green">
+        <div class="card-label">Totale da richiedere</div>
+        <div class="card-value" id="summaryTotale">€ 0,00</div>
+      </div>
+    </div>
+
+    <div class="results-table-wrapper">
+      <table id="resultsTable">
+        <thead>
+          <tr>
+            <th>Condomino</th>
+            <th>Condominio</th>
+            <th>Importo</th>
+            <th>Giorni ritardo</th>
+            <th>Tasso applicato</th>
+            <th>Mora calcolata</th>
+            <th>Tributo</th>
+            <th>Totale dovuto</th>
+            <th>Stato</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+
+    <div class="tributi-note" id="tribuNota" style="display:none">
+      <strong>⚠️ Nota tributi associati</strong>
+      Uno o più condomini hanno tributi locali (es. TARI parti comuni) collegati alla morosità.
+      Questi importi sono inclusi nel totale da richiedere. Verifica con il tuo consulente fiscale
+      se applicare anche interessi separati sul tributo non versato, ai sensi dell'art. 13 D.Lgs. 471/1997.
+    </div>
+
+    <div style="margin-top:1.5rem; display:flex; gap:1rem; flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="stampaPagina()">🖨️ Stampa / Salva PDF</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="page-footer">
+  Calcolatore More Condominiali · Versione 1.0 Beta · Solo uso indicativo — verifica sempre con il tuo consulente
 </div>
 
 <script>
-// ── DATI ─────────────────────────────────────────────────────────────
-const TASSI = { 2025:2.00, 2024:2.50, 2023:5.00, 2022:1.25, 2021:0.01, 2020:0.05 };
+// ── TASSI LEGALI ─────────────────────────────────────────────────────────────
+const tassiLegali = {
+  2025: 2.00,
+  2024: 2.50,
+  2023: 5.00,
+  2022: 1.25,
+  2021: 0.01,
+  2020: 0.05
+};
+
+// ── STATO ────────────────────────────────────────────────────────────────────
 let righeCount = 0;
 
-// ── INIT ──────────────────────────────────────────────────────────────
+// ── INIT ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  renderTassiTabella();
-  addRow(); addRow(); addRow();
-  aggiornaTasso();
-  aggiornaRiepilogoLaterale();
-  document.getElementById('rpData').textContent = new Date().toLocaleDateString('it-IT');
+  addRow(); addRow(); addRow(); // 3 righe di default
 });
 
-function renderTassiTabella() {
-  const tb = document.getElementById('tassiTabella');
-  Object.entries(TASSI).forEach(([anno, tasso]) => {
-    const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors';
-    tr.innerHTML = `
-      <td class="px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300">${anno}</td>
-      <td class="px-3 py-2 text-xs font-bold text-right text-primary">${tasso.toLocaleString('it-IT',{minimumFractionDigits:2})}%</td>
-    `;
-    tb.appendChild(tr);
-  });
-}
-
-// ── UI TOGGLE ─────────────────────────────────────────────────────────
-function toggleMora() {
-  const tipo = document.querySelector('input[name="tipoMora"]:checked').value;
-  document.getElementById('boxLegale').classList.toggle('hidden', tipo !== 'legale');
-  document.getElementById('boxContrattuale').classList.toggle('hidden', tipo !== 'contrattuale');
-  aggiornaRiepilogoLaterale();
-}
-
-function aggiornaTasso() {
-  const anno = parseInt(document.getElementById('annoRif').value);
-  const tasso = TASSI[anno] ?? 2.00;
-  document.getElementById('tassoLabel').textContent = tasso.toLocaleString('it-IT',{minimumFractionDigits:2}) + '%';
-  aggiornaRiepilogoLaterale();
-}
-
-function aggiornaRiepilogoLaterale() {
-  const tipo = document.querySelector('input[name="tipoMora"]:checked')?.value ?? 'legale';
-  let label;
-  if (tipo === 'legale') {
-    const anno = parseInt(document.getElementById('annoRif').value);
-    const tasso = TASSI[anno] ?? 2.00;
-    label = `Legale ${anno} — ${tasso.toLocaleString('it-IT',{minimumFractionDigits:2})}%`;
+// ── UI HELPERS ────────────────────────────────────────────────────────────────
+function toggleMoraContrattuale() {
+  const tipo = document.getElementById('tipoMora').value;
+  const box  = document.getElementById('boxContrattuale');
+  const info = document.getElementById('tassoInfo');
+  if (tipo === 'contrattuale') {
+    box.classList.add('visible');
+    info.style.display = 'none';
   } else {
-    const tasso = parseFloat(document.getElementById('tassoContrattuale').value) || 0;
-    label = `Contrattuale — ${tasso.toLocaleString('it-IT',{minimumFractionDigits:2})}%`;
+    box.classList.remove('visible');
+    info.style.display = '';
   }
-  document.getElementById('rpTipoMora').textContent = label;
-  const count = document.querySelectorAll('#inputBody tr').length;
-  document.getElementById('rpCondomini').textContent = count;
 }
 
-// ── RIGHE ─────────────────────────────────────────────────────────────
+function aggiornaTassoInfo() {
+  const anno  = parseInt(document.getElementById('annoRif').value);
+  const tasso = tassiLegali[anno] ?? '?';
+  document.getElementById('tassoInfo').textContent =
+    `Tasso legale ${anno}: ${tasso.toLocaleString('it-IT', {minimumFractionDigits:2})}%`;
+}
+
+// ── AGGIUNGI RIGA ─────────────────────────────────────────────────────────────
 function addRow() {
   righeCount++;
   const id = righeCount;
   const tr = document.createElement('tr');
   tr.id = `row-${id}`;
-  tr.className = 'row-enter hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors group';
   tr.innerHTML = `
-    <td class="px-4 py-2.5">
-      <div class="flex items-center gap-2 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 focus-within:border-primary transition-colors">
-        <span class="material-symbols-outlined text-slate-400 text-sm">person</span>
-        <input class="input-field" type="text" placeholder="Es. Mario Rossi" id="nome-${id}">
-      </div>
-    </td>
-    <td class="px-4 py-2.5">
-      <div class="border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 focus-within:border-primary transition-colors">
-        <input class="input-field" type="text" placeholder="Es. Via Roma 10 Sc.A" id="cond-${id}">
-      </div>
-    </td>
-    <td class="px-4 py-2.5">
-      <div class="flex items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 focus-within:border-primary transition-colors">
-        <span class="text-slate-400 text-xs font-bold">€</span>
-        <input class="input-field font-mono" type="number" placeholder="150.00" step="0.01" min="0" id="imp-${id}">
-      </div>
-    </td>
-    <td class="px-4 py-2.5">
-      <div class="border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 focus-within:border-primary transition-colors">
-        <input class="input-field font-mono text-[11px]" type="date" id="scad-${id}">
-      </div>
-    </td>
-    <td class="px-4 py-2.5">
-      <div class="border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 focus-within:border-primary transition-colors">
-        <input class="input-field font-mono text-[11px]" type="date" id="pag-${id}" title="Vuoto = non ancora pagato">
-      </div>
-    </td>
-    <td class="px-4 py-2.5">
-      <div class="flex items-center gap-1 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 bg-white dark:bg-slate-800 focus-within:border-primary transition-colors">
-        <span class="text-slate-400 text-xs font-bold">€</span>
-        <input class="input-field font-mono" type="number" placeholder="0.00" step="0.01" min="0" id="trib-${id}">
-      </div>
-    </td>
-    <td class="px-3 py-2.5 text-center">
-      <button onclick="removeRow(${id})" class="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-red-500 rounded-lg p-1 hover:bg-red-50 dark:hover:bg-red-900/20">
-        <span class="material-symbols-outlined text-base">delete</span>
-      </button>
-    </td>
+    <td><input class="input-cell" type="text"   placeholder="Es. Mario Rossi"     id="nome-${id}"></td>
+    <td><input class="input-cell" type="text"   placeholder="Es. Via Roma 10 Sc.A" id="cond-${id}"></td>
+    <td><input class="input-cell" type="number" placeholder="150.00" step="0.01" min="0" id="imp-${id}"></td>
+    <td><input class="input-cell" type="date"   id="scad-${id}"></td>
+    <td><input class="input-cell" type="date"   id="pag-${id}" title="Lascia vuoto se non ancora pagato"></td>
+    <td><input class="input-cell" type="number" placeholder="0.00" step="0.01" min="0" id="trib-${id}"></td>
+    <td><button class="btn-remove" onclick="removeRow(${id})" title="Rimuovi riga">✕</button></td>
   `;
   document.getElementById('inputBody').appendChild(tr);
-  aggiornaRiepilogoLaterale();
 }
 
 function removeRow(id) {
-  document.getElementById(`row-${id}`)?.remove();
-  aggiornaRiepilogoLaterale();
+  const row = document.getElementById(`row-${id}`);
+  if (row) row.remove();
 }
 
-// ── CALCOLA ───────────────────────────────────────────────────────────
+// ── CALCOLA ───────────────────────────────────────────────────────────────────
 function calcola() {
-  const tipo = document.querySelector('input[name="tipoMora"]:checked').value;
-  const anno = parseInt(document.getElementById('annoRif').value);
-  const oggi = new Date(); oggi.setHours(0,0,0,0);
+  const tipo  = document.getElementById('tipoMora').value;
+  const anno  = parseInt(document.getElementById('annoRif').value);
+  const oggi  = new Date();
+  oggi.setHours(0,0,0,0);
 
-  const tassoAnnuo = tipo === 'legale'
-    ? (TASSI[anno] ?? 2.00)
-    : (parseFloat(document.getElementById('tassoContrattuale').value) || 0);
+  let tassoAnnuo;
+  if (tipo === 'legale') {
+    tassoAnnuo = tassiLegali[anno] ?? 2.00;
+  } else {
+    tassoAnnuo = parseFloat(document.getElementById('tassoContrattuale').value) || 0;
+  }
 
+  // Raccogli righe
   const righe = [];
   document.querySelectorAll('#inputBody tr').forEach(tr => {
-    const id = tr.id.replace('row-','');
+    const id = tr.id.replace('row-', '');
     const nome = document.getElementById(`nome-${id}`)?.value.trim();
     const cond = document.getElementById(`cond-${id}`)?.value.trim();
     const imp  = parseFloat(document.getElementById(`imp-${id}`)?.value);
     const scad = document.getElementById(`scad-${id}`)?.value;
     const pag  = document.getElementById(`pag-${id}`)?.value;
     const trib = parseFloat(document.getElementById(`trib-${id}`)?.value) || 0;
-    if (!nome || !imp || !scad) return;
-    righe.push({nome, cond, imp, scad, pag, trib, id});
+
+    if (!nome || !imp || !scad) return; // salta righe vuote
+
+    righe.push({ nome, cond, imp, scad, pag, trib, id });
   });
 
-  if (!righe.length) {
-    alert('Inserisci almeno un condomino con nome, importo e scadenza.');
+  if (righe.length === 0) {
+    alert('Inserisci almeno un condomino con nome, importo e data di scadenza.');
     return;
   }
 
+  // Calcola
   const risultati = righe.map(r => {
     const dataScad = new Date(r.scad);
     const dataRef  = r.pag ? new Date(r.pag) : oggi;
-    const ms = dataRef - dataScad;
-    const gg = ms > 0 ? Math.floor(ms / 86400000) : 0;
-    const mora = gg > 0 ? r.imp * (tassoAnnuo / 100) / 365 * gg : 0;
+    const msRitardo = dataRef - dataScad;
+    const giorniRitardo = msRitardo > 0 ? Math.floor(msRitardo / 86400000) : 0;
+
+    let mora = 0;
+    if (giorniRitardo > 0) {
+      mora = r.imp * (tassoAnnuo / 100) / 365 * giorniRitardo;
+    }
+
     const totale = r.imp + mora + r.trib;
-    const stato = gg <= 0 ? 'ok' : gg > 60 ? 'critico' : 'mora';
-    return {...r, gg, mora, totale, tassoAnnuo, stato};
+    const stato  = giorniRitardo <= 0 ? 'ok' : (giorniRitardo > 60 ? 'critico' : 'mora');
+
+    return { ...r, giorniRitardo, mora, totale, tassoAnnuo, stato };
   });
 
   renderResults(risultati);
-
-  // aggiorna step bar
-  document.getElementById('step2circle').className = 'size-7 rounded-full bg-primary flex items-center justify-center text-white';
-  document.getElementById('step2circle').innerHTML = '<span class="material-symbols-outlined text-sm">check</span>';
-  document.getElementById('step2label').className = 'text-[10px] font-bold text-primary';
-  document.getElementById('step3line').className = 'flex-1 h-[2px] bg-primary mb-3';
-  document.getElementById('step3circle').className = 'size-7 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center text-primary';
 }
 
-// ── RENDER RISULTATI ──────────────────────────────────────────────────
+// ── RENDER RISULTATI ──────────────────────────────────────────────────────────
 function renderResults(risultati) {
   const tbody = document.getElementById('resultsBody');
   tbody.innerHTML = '';
 
-  let sumMore=0, sumTributi=0, sumTotale=0, morosi=0, hasTrib=false;
+  let sumMore = 0, sumQuote = 0, sumTributi = 0, sumTotale = 0;
+  let hasTributi = false;
 
   risultati.forEach(r => {
     sumMore    += r.mora;
+    sumQuote   += r.imp;
     sumTributi += r.trib;
     sumTotale  += r.totale;
-    if (r.stato !== 'ok') morosi++;
-    if (r.trib > 0) hasTrib = true;
+    if (r.trib > 0) hasTributi = true;
 
-    const badge = r.stato === 'ok'
-      ? '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">Regolare</span>'
+    const stato = r.stato === 'ok'
+      ? '<span class="badge badge-ok">Regolare</span>'
       : r.stato === 'critico'
-        ? '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">Critico</span>'
-        : '<span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">In Mora</span>';
+        ? '<span class="badge badge-warning">Critico</span>'
+        : '<span class="badge badge-mora">In mora</span>';
 
     const tr = document.createElement('tr');
-    tr.className = r.stato !== 'ok'
-      ? 'border-l-2 border-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors'
-      : 'hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors';
+    tr.className = r.stato === 'ok' ? 'result-row-ok' : 'result-row-mora';
     tr.innerHTML = `
-      <td class="px-4 py-3 text-xs font-bold text-slate-900 dark:text-slate-100">${esc(r.nome)}</td>
-      <td class="px-4 py-3 text-xs text-slate-500">${esc(r.cond||'—')}</td>
-      <td class="px-4 py-3 text-xs font-mono text-right text-slate-700 dark:text-slate-300">${fmt(r.imp)}</td>
-      <td class="px-4 py-3 text-xs font-mono text-right ${r.gg>0?'text-red-500 font-bold':'text-slate-400'}">${r.gg>0?r.gg+' gg':'—'}</td>
-      <td class="px-4 py-3 text-xs font-mono text-right text-slate-400">${r.tassoAnnuo.toFixed(2)}%</td>
-      <td class="px-4 py-3 text-xs font-mono text-right ${r.mora>0?'text-red-500 font-bold':'text-slate-400'}">${r.mora>0?fmt(r.mora):'—'}</td>
-      <td class="px-4 py-3 text-xs font-mono text-right ${r.trib>0?'text-amber-500 font-bold':'text-slate-400'}">${r.trib>0?fmt(r.trib):'—'}</td>
-      <td class="px-4 py-3 text-xs font-mono text-right font-black text-primary">${fmt(r.totale)}</td>
-      <td class="px-4 py-3 text-center">${badge}</td>
+      <td><strong>${esc(r.nome)}</strong></td>
+      <td style="color:var(--muted); font-size:0.82rem">${esc(r.cond || '—')}</td>
+      <td class="amount">${fmt(r.imp)}</td>
+      <td class="amount" style="color:${r.giorniRitardo > 0 ? 'var(--accent)' : 'var(--success)'}">
+        ${r.giorniRitardo > 0 ? r.giorniRitardo + ' gg' : '—'}
+      </td>
+      <td class="amount" style="font-size:0.8rem; color:var(--muted)">${r.tassoAnnuo.toFixed(2)}% / anno</td>
+      <td class="amount amount-mora">${r.mora > 0 ? fmt(r.mora) : '—'}</td>
+      <td class="amount" style="color:var(--warning)">${r.trib > 0 ? fmt(r.trib) : '—'}</td>
+      <td class="amount amount-total">${fmt(r.totale)}</td>
+      <td>${stato}</td>
     `;
     tbody.appendChild(tr);
   });
 
-  document.getElementById('cardMorosi').textContent  = morosi;
-  document.getElementById('cardMore').textContent    = fmt(sumMore);
-  document.getElementById('cardTributi').textContent = fmt(sumTributi);
-  document.getElementById('cardTotale').textContent  = fmt(sumTotale);
-  document.getElementById('notaTributi').classList.toggle('hidden', !hasTrib);
+  document.getElementById('summaryMore').textContent    = fmt(sumMore);
+  document.getElementById('summaryQuote').textContent   = fmt(sumQuote);
+  document.getElementById('summaryTributi').textContent = fmt(sumTributi);
+  document.getElementById('summaryTotale').textContent  = fmt(sumTotale);
 
-  const sec = document.getElementById('resultsSection');
-  sec.classList.remove('hidden');
-  sec.classList.add('result-panel');
-  sec.scrollIntoView({behavior:'smooth', block:'start'});
+  document.getElementById('tribuNota').style.display = hasTributi ? '' : 'none';
+  document.getElementById('resultsSection').classList.add('visible');
+  document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ── UTILS ─────────────────────────────────────────────────────────────
+// ── UTILS ─────────────────────────────────────────────────────────────────────
 function fmt(n) {
-  return '€\u00a0' + n.toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2});
+  return '€\u00a0' + n.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 function resetAll() {
-  if (!confirm('Azzerare tutto e ricominciare?')) return;
   document.getElementById('inputBody').innerHTML = '';
-  document.getElementById('resultsSection').classList.add('hidden');
+  document.getElementById('resultsSection').classList.remove('visible');
   righeCount = 0;
   addRow(); addRow(); addRow();
-  // reset step bar
-  document.getElementById('step2circle').className = 'size-7 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500';
-  document.getElementById('step2circle').innerHTML = '<span class="text-xs font-bold">2</span>';
-  document.getElementById('step2label').className = 'text-[10px] font-bold text-slate-400';
-  document.getElementById('step3line').className = 'flex-1 h-[2px] bg-slate-200 dark:bg-slate-700 mb-3';
-  document.getElementById('step3circle').className = 'size-7 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500';
-  aggiornaRiepilogoLaterale();
 }
 function stampaPagina() { window.print(); }
-
-// aggiorna pannello laterale quando cambia tasso contrattuale
-document.addEventListener('input', e => {
-  if (e.target.id === 'tassoContrattuale') aggiornaRiepilogoLaterale();
-});
 </script>
 </body>
 </html>
